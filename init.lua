@@ -118,6 +118,7 @@ local config = {
     servers = {
       -- "pyright"
     },
+    skip_setup = { "rust_analyzer" },
     -- easily add or disable built in mappings added during LSP attaching
     mappings = {
       n = {
@@ -182,6 +183,15 @@ local config = {
   -- Configure plugins
   plugins = {
     init = {
+      {
+        "simrat39/rust-tools.nvim",
+        after = "mason-lspconfig.nvim",
+        config = function()
+          require("rust-tools").setup {
+            server = astronvim.lsp.server_settings "rust_analyzer",
+          }
+        end,
+      },
       -- You can disable default plugins as follows:
       -- ["goolord/alpha-nvim"] = { disable = true },
 
@@ -234,7 +244,7 @@ local config = {
     },
     -- use mason-lspconfig to configure LSP installations
     ["mason-lspconfig"] = { -- overrides `require("mason-lspconfig").setup(...)`
-      ensure_installed = { "sumneko_lua" },
+      ensure_installed = { "sumneko_lua", "rust-analyzer" },
     },
     -- use mason-tool-installer to configure DAP/Formatters/Linter installation
     ["mason-tool-installer"] = { -- overrides `require("mason-tool-installer").setup(...)`
