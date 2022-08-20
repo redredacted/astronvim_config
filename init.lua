@@ -154,6 +154,25 @@ local config = {
       --     client.resolved_capabilities.document_formatting = false
       --   end
       -- }
+      rust_analyzer = {
+        on_attach = function(_, bufnr)
+          local dap = require "dap"
+          local widgets = require "dap.ui.widgets"
+          local rt = require "rust-tools"
+          vim.keymap.set("n", "<C-space>ha", rt.hover_actions.hover_actions, { buffer = bufnr })
+          vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+          vim.keymap.set("n", "<C-space>tb", dap.toggle_breakpoint(), { buffer = bufnr })
+          vim.keymap.set("n", "<C-space>c", dap.continue(), { buffer = bufnr })
+          vim.keymap.set("n", "<C-space>so", dap.step_over(), { buffer = bufnr })
+          vim.keymap.set("n", "<C-space>si", dap.step_into(), { buffer = bufnr })
+          vim.keymap.set("n", "<C-space>r", dap.repl.toggle(), { buffer = bufnr })
+          vim.keymap.set("n", "<C-space>ts", widgets.sidebar(widgets.scopes).toggle(), { buffer = bufnr })
+          vim.keymap.set("n", "<C-space>tf", widgets.sidebar(widgets.frames).toggle(), { buffer = bufnr })
+          vim.keymap.set("n", "<C-space>te", widgets.sidebar(widgets.expression).toggle(), { buffer = bufnr })
+          vim.keymap.set("n", "<C-space>tt", widgets.sidebar(widgets.threads).toggle(), { buffer = bufnr })
+          vim.keymap.set("n", "<C-space>th", widgets.hover(), { buffer = bufnr })
+        end,
+      },
     },
   },
 
@@ -189,8 +208,19 @@ local config = {
         config = function()
           require("rust-tools").setup {
             server = astronvim.lsp.server_settings "rust_analyzer",
+            opts = {
+              dap = {
+                adapter = require("rust-tools.dap").get_codelldb_adapter(
+                  "/usr/lib/codelldb/adapter/codelldb",
+                  "/usr/lib/codelldb/lldb/lib/liblldb.so"
+                ),
+              },
+            },
           }
         end,
+      },
+      {
+        "mfussenegger/nvim-dap",
       },
       -- You can disable default plugins as follows:
       -- ["goolord/alpha-nvim"] = { disable = true },
